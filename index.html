@@ -1,0 +1,798 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>R-keeper интерактив</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #EFEAE6;
+            font-size: 16px;
+        }
+
+        .workspace {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .task-description {
+            background-color: #FFFFFF;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-radius: 10px;
+            border: 1px solid #BF8F61;
+        }
+
+            .task-description h3 {
+                margin: 0 0 10px 0;
+                color: #333;
+                font-size: 1.2em;
+            }
+
+            .task-description p {
+                margin: 0;
+                color: #666;
+                line-height: 1.4;
+                font-size: 1em;
+            }
+
+        .keeper {
+            background-color: #FBF1E5;
+            border: 8px solid #BF8F61;
+            border-radius: 20px;
+            display: flex;
+            flex-direction: column;
+            min-height: 500px;
+            padding: 20px;
+            gap: 20px;
+        }
+
+        .selected-items {
+            flex: 1;
+            border: 2px solid #BF8F61;
+            border-radius: 10px;
+            padding: 15px;
+            display: flex;
+            flex-direction: column;
+            min-height: 150px;
+            max-height: 250px;
+            overflow-y: auto;
+        }
+
+        .items-list {
+            flex: 1;
+            overflow-y: auto;
+        }
+
+        .total-summary {
+            padding: 10px;
+            text-align: center;
+            background-color: #462A0F;
+            color: white;
+            border-radius: 5px;
+            margin-top: 10px;
+            font-weight: bold;
+            font-size: 1em;
+        }
+
+        .selected-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            padding: 5px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.9em;
+        }
+
+            .selected-item.selected {
+                background-color: #462A0F;
+                color: white;
+            }
+
+        .controls {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .categories-section {
+            width: 100%;
+        }
+
+        .categories {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+        }
+
+        .payment-methods {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 8px;
+        }
+
+        .category-btn, .payment-btn {
+            background-color: #BF8F61;
+            color: white;
+            border: none;
+            padding: 12px 6px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 0.8em;
+            text-align: center;
+            line-height: 1.2;
+        }
+
+            .payment-btn:disabled {
+                opacity: 0.5;
+                cursor: not-allowed;
+            }
+
+        .right-controls {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            width: 100%;
+        }
+
+        .numpad-row {
+            display: flex;
+            gap: 5px;
+        }
+
+        .num-btn {
+            background-color: #BF8F61;
+            color: white;
+            border: none;
+            padding: 8px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 0.8em;
+            flex: 1;
+            min-width: 30px;
+        }
+
+            .num-btn:disabled {
+                opacity: 0.7;
+                cursor: not-allowed;
+            }
+
+        .modifier-btn {
+            background-color: #BF8F61;
+            color: white;
+            border: none;
+            padding: 8px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            width: 100%;
+            font-size: 0.8em;
+            opacity: 0.7;
+            pointer-events: none;
+        }
+
+        .pay-btn {
+            background-color: #8F633D;
+            color: white;
+            border: none;
+            padding: 8px;
+            border-radius: 8px;
+            font-weight: bold;
+            width: 100%;
+            text-align: center;
+            cursor: pointer;
+            font-size: 0.8em;
+            line-height: 1.2;
+        }
+
+        .action-btns {
+            display: flex;
+            gap: 5px;
+        }
+
+        .action-btn {
+            flex: 1;
+            border: none;
+            padding: 8px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 1em;
+        }
+
+            .action-btn.correct {
+                background-color: #4CAF50;
+                color: white;
+            }
+
+            .action-btn.incorrect {
+                background-color: #F44336;
+                color: white;
+            }
+
+            .action-btn:hover.correct {
+                background-color: #45a049;
+            }
+
+            .action-btn:hover.incorrect {
+                background-color: #da190b;
+            }
+
+        .help-icon {
+            color: #BF8F61;
+            font-weight: bold;
+            cursor: pointer;
+            font-size: 0.8em;
+        }
+
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            display: none;
+        }
+
+        .modal-content {
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            max-width: 80%;
+            text-align: center;
+        }
+
+        .modal-title {
+            font-size: 1.5em;
+            margin-bottom: 15px;
+            color: #462A0F;
+        }
+
+        .modal-message {
+            margin-bottom: 20px;
+            font-size: 1.1em;
+        }
+
+        .modal-btn {
+            background-color: #BF8F61;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1em;
+        }
+
+        /* Мобильная версия */
+        @media (max-width: 767px) {
+            body {
+                font-size: 12px;
+                padding: 10px;
+            }
+
+            .task-description {
+                padding: 10px;
+            }
+
+                .task-description h3 {
+                    font-size: 1em;
+                }
+
+                .task-description p {
+                    font-size: 0.8em;
+                }
+
+            .keeper {
+                padding: 10px;
+                border-width: 5px;
+            }
+
+            .selected-items {
+                padding: 10px;
+                min-height: 120px;
+                max-height: 200px;
+            }
+
+            .selected-item {
+                font-size: 0.7em;
+                margin-bottom: 5px;
+                padding: 3px;
+            }
+
+            .category-btn, .payment-btn {
+                padding: 8px 4px;
+                font-size: 0.7em;
+            }
+
+            .num-btn, .modifier-btn, .pay-btn {
+                padding: 6px;
+                font-size: 0.7em;
+            }
+
+            .action-btn {
+                padding: 6px;
+                font-size: 0.8em;
+            }
+
+            .modal-content {
+                padding: 15px;
+                max-width: 90%;
+            }
+
+            .modal-title {
+                font-size: 1.2em;
+            }
+
+            .modal-message {
+                font-size: 1em;
+            }
+        }
+
+        /* Десктопная версия */
+        @media (min-width: 768px) {
+            .keeper {
+                flex-direction: row;
+            }
+
+            .selected-items {
+                flex: 2.6;
+                margin-right: 10px;
+                max-height: none;
+            }
+
+            .controls {
+                width: 540px;
+                flex-direction: row;
+            }
+
+            .right-controls {
+                width: 120px;
+            }
+
+            .categories {
+                grid-template-columns: 1fr 1fr;
+            }
+
+            body {
+                font-size: 16px;
+            }
+
+            .task-description h3 {
+                font-size: 1.2em;
+            }
+
+            .task-description p {
+                font-size: 1em;
+            }
+
+            .selected-item {
+                font-size: 0.9em;
+            }
+
+            .category-btn, .payment-btn {
+                font-size: 0.8em;
+                padding: 12px 6px;
+            }
+
+            .num-btn, .modifier-btn, .pay-btn {
+                font-size: 0.8em;
+                padding: 8px;
+            }
+
+            .action-btn {
+                font-size: 1em;
+                padding: 8px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="workspace">
+        <div class="task-description">
+            <h3>Задание:</h3>
+            <p id="task-text"></p>
+        </div>
+
+        <div class="keeper">
+            <div class="selected-items">
+                <div class="items-list">
+                    <!-- Выбранные элементы будут здесь -->
+                </div>
+                <div class="total-summary" style="display: none;">
+                    <!-- Итоговая сумма будет здесь -->
+                </div>
+            </div>
+
+            <div class="controls">
+                <div class="categories-section">
+                    <div class="categories">
+                        <button class="category-btn" data-category="Горячие напитки">Горячие<br>напитки</button>
+                        <button class="category-btn" data-category="Холодные напитки">Холодные<br>напитки</button>
+                        <button class="category-btn" data-category="Модификаторы">Модификаторы</button>
+                        <button class="category-btn" data-category="Сироп">Сироп</button>
+                        <button class="category-btn" data-category="Завтрак">Завтрак</button>
+                        <button class="category-btn" data-category="Десерты">Десерты</button>
+                    </div>
+                </div>
+
+                <div class="right-controls">
+                    <div class="numpad-row">
+                        <button class="num-btn" disabled>0</button>
+                        <button class="num-btn" disabled>.</button>
+                        <button class="num-btn">Удл</button>
+                    </div>
+
+                    <button class="modifier-btn">Модификатор</button>
+
+                    <button class="pay-btn">Оплатить Рубли:<br>0.00</button>
+
+                    <div class="action-btns">
+                        <button class="action-btn correct">✓</button>
+                        <button class="action-btn incorrect">✗</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal" id="result-modal">
+        <div class="modal-content">
+            <h3 class="modal-title" id="modal-title"></h3>
+            <p class="modal-message" id="modal-message"></p>
+            <button class="modal-btn" id="modal-btn">OK</button>
+        </div>
+    </div>
+
+    <script>
+        // Данные о товарах по категориям
+        const productsData = {
+            'Горячие напитки': [
+                { name: 'Большой капучино', price: 180 },
+                { name: 'Маленький капучино', price: 150 },
+                { name: 'Американо', price: 120 },
+                { name: 'Латте', price: 200 },
+                { name: 'Эспрессо', price: 100 },
+                { name: 'Раф', price: 220 },
+                { name: 'Какао', price: 190 },
+                { name: 'Банановый какао', price: 210 }
+            ],
+            'Холодные напитки': [
+                { name: 'Айс латте', price: 200 },
+                { name: 'Лимонад', price: 150 },
+                { name: 'Молочный коктейль', price: 180 }
+            ],
+            'Модификаторы': [
+                { name: 'С собой', price: 0 },
+                { name: 'На месте', price: 0 }
+            ],
+            'Сироп': [
+                { name: 'Ванильный', price: 30 },
+                { name: 'Карамельный', price: 30 },
+                { name: 'Шоколадный', price: 30 },
+                { name: 'Малиновый', price: 30 }
+            ],
+            'Завтрак': [
+                { name: 'Завтрак №1', price: 350, type: 'breakfast' },
+                { name: 'Завтрак №2', price: 400, type: 'breakfast' },
+                { name: 'Завтрак №3', price: 450, type: 'breakfast' }
+            ],
+            'Десерты': [
+                { name: 'Чизкейк', price: 300 },
+                { name: 'Тирамису', price: 350 },
+                { name: 'Сырники', price: 280 },
+                { name: 'Малиновый пончик', price: 150 },
+                { name: 'Шоколадный пончик', price: 150 }
+            ]
+        };
+
+        // Текущее состояние
+        const state = {
+            selectedItems: [],
+            total: 0,
+            currentBreakfast: null,
+            breakfastSelections: {},
+            selectedItemIndex: -1,
+            paymentMode: false,
+            currentTaskIndex: 0,
+            tasks: [],
+            completedTasks: 0
+        };
+
+        // DOM элементы
+        const elements = {
+            selectedItems: document.querySelector('.items-list'),
+            totalSummary: document.querySelector('.total-summary'),
+            categoriesSection: document.querySelector('.categories-section'),
+            payBtn: document.querySelector('.pay-btn'),
+            delBtn: document.querySelector('.num-btn:not(:disabled)'),
+            taskText: document.getElementById('task-text'),
+            resultModal: document.getElementById('result-modal'),
+            modalTitle: document.getElementById('modal-title'),
+            modalMessage: document.getElementById('modal-message'),
+            modalBtn: document.getElementById('modal-btn')
+        };
+
+        // Инициализация приложения
+        function init() {
+            // Получаем задания из родительского окна
+            window.addEventListener('message', function (event) {
+                if (event.data.tasks) {
+                    state.tasks = event.data.tasks;
+                    loadTask(state.currentTaskIndex);
+                }
+            });
+
+            // Отправляем запрос на получение заданий
+            window.parent.postMessage({ action: 'getTasks' }, '*');
+
+            // Обработчики для кнопок категорий
+            document.querySelectorAll('.category-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const category = btn.dataset.category;
+                    showProducts(category);
+                });
+            });
+
+            // Обработчик для кнопки "Удл" - удаляет выбранный элемент
+            document.querySelector('.num-btn:not(:disabled)').addEventListener('click', removeSelectedItem);
+
+            // Обработчик для кнопки "✓" - проверка задания
+            document.querySelector('.action-btn.correct').addEventListener('click', checkTask);
+
+            // Обработчик для кнопки "✗" - очищает весь чек
+            document.querySelector('.action-btn.incorrect').addEventListener('click', clearAllItems);
+
+            // Обработчик для кнопки модального окна
+            elements.modalBtn.addEventListener('click', closeModal);
+
+            showMainCategories();
+        }
+
+        // Загрузка задания
+        function loadTask(index) {
+            if (index < state.tasks.length) {
+                const task = state.tasks[index];
+                elements.taskText.textContent = task.task;
+                clearAllItems();
+            } else {
+                // Все задания выполнены
+                window.parent.postMessage({ action: 'completeAllTasks' }, '*');
+            }
+        }
+
+        // Проверка задания
+        function checkTask() {
+            const currentTask = state.tasks[state.currentTaskIndex];
+            const userAnswer = state.selectedItems.map(item => item.name).join(', ');
+            const correctAnswer = currentTask.answer;
+
+            // Нормализация строк для сравнения (удаление лишних пробелов и приведение к нижнему регистру)
+            const normalizedUserAnswer = userAnswer.replace(/\s+/g, ' ').trim().toLowerCase();
+            const normalizedCorrectAnswer = correctAnswer.replace(/\s+/g, ' ').trim().toLowerCase();
+
+            if (normalizedUserAnswer === normalizedCorrectAnswer) {
+                showModal('Правильно!', 'Вы успешно выполнили задание.', 'success');
+                state.completedTasks++;
+
+                // Если выполнены все задания, сообщаем родительскому окну
+                if (state.completedTasks === state.tasks.length) {
+                    window.parent.postMessage({ action: 'completeAllTasks' }, '*');
+                }
+            } else {
+                showModal('Ошибка', 'Задание выполнено неверно. Попробуйте еще раз.', 'error');
+            }
+        }
+
+        // Показать модальное окно
+        function showModal(title, message, type) {
+            elements.modalTitle.textContent = title;
+            elements.modalMessage.textContent = message;
+
+            if (type === 'success') {
+                elements.modalTitle.style.color = '#4CAF50';
+            } else {
+                elements.modalTitle.style.color = '#F44336';
+            }
+
+            elements.resultModal.style.display = 'flex';
+        }
+
+        // Закрыть модальное окно
+        function closeModal() {
+            elements.resultModal.style.display = 'none';
+
+            // Если задание выполнено верно, переходим к следующему
+            if (state.completedTasks > state.currentTaskIndex) {
+                state.currentTaskIndex++;
+                loadTask(state.currentTaskIndex);
+            }
+        }
+
+        // Очистить весь чек
+        function clearAllItems() {
+            state.selectedItems = [];
+            state.total = 0;
+            state.selectedItemIndex = -1;
+            updateSelectedItems();
+            updateTotal();
+            showMainCategories();
+            state.paymentMode = false;
+        }
+
+        // Показать товары выбранной категории
+        function showProducts(category) {
+            if (state.paymentMode) return;
+
+            const products = productsData[category];
+            if (!products) return;
+
+            // Создаем HTML для товаров
+            let html = '<div class="categories">';
+
+            // Кнопка "Назад"
+            html += `<button class="category-btn back-btn">←</button>`;
+
+            // Кнопки товаров
+            products.forEach(product => {
+                html += `<button class="category-btn product-btn"
+                                             data-name="${product.name}"
+                                             data-price="${product.price}"
+                                             ${product.type ? `data-type="${product.type}"` : ''}>
+                                             ${product.name}
+                                             </button>`;
+            });
+
+            html += '</div>';
+
+            // Заменяем содержимое секции категорий
+            elements.categoriesSection.innerHTML = html;
+
+            // Добавляем обработчики
+            document.querySelector('.back-btn').addEventListener('click', showMainCategories);
+            document.querySelectorAll('.product-btn').forEach(btn => {
+                btn.addEventListener('click', function () {
+                    if (this.dataset.type === 'breakfast') {
+                        startBreakfastSelection(this.dataset.name, parseFloat(this.dataset.price));
+                    } else {
+                        addItem(this.dataset.name, parseFloat(this.dataset.price));
+                    }
+                });
+            });
+        }
+
+        // Показать главные категории
+        function showMainCategories() {
+            if (state.paymentMode) return;
+
+            const html = `
+                            <div class="categories">
+                                <button class="category-btn" data-category="Горячие напитки">Горячие<br>напитки</button>
+                                <button class="category-btn" data-category="Холодные напитки">Холодные<br>напитки</button>
+                                <button class="category-btn" data-category="Модификаторы">Модификаторы</button>
+                                <button class="category-btn" data-category="Сироп">Сироп</button>
+                                <button class="category-btn" data-category="Завтрак">Завтрак</button>
+                                <button class="category-btn" data-category="Десерты">Десерты</button>
+                            </div>
+                        `;
+
+            elements.categoriesSection.innerHTML = html;
+
+            // Снова добавляем обработчики
+            document.querySelectorAll('.category-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const category = btn.dataset.category;
+                    showProducts(category);
+                });
+            });
+        }
+
+        // Добавить товар в заказ
+        function addItem(name, price) {
+            // Добавляем товар в состояние
+            state.selectedItems.push({ name, price });
+            state.total += price;
+
+            // Обновляем отображение
+            updateSelectedItems();
+            updateTotal();
+
+            // Выделяем последний добавленный элемент
+            state.selectedItemIndex = state.selectedItems.length - 1;
+            highlightSelectedItem();
+        }
+
+        // Удалить выбранный товар из заказа
+        function removeSelectedItem() {
+            if (state.selectedItems.length === 0) return;
+
+            if (state.selectedItemIndex === -1) {
+                // Если ничего не выбрано, удаляем последний элемент
+                removeLastItem();
+                return;
+            }
+
+            // Удаляем выбранный элемент
+            const removedItem = state.selectedItems.splice(state.selectedItemIndex, 1)[0];
+            state.total -= removedItem.price;
+
+            // Обновляем отображение
+            updateSelectedItems();
+            updateTotal();
+
+            // Сбрасываем выделение
+            state.selectedItemIndex = -1;
+        }
+
+        // Удалить последний товар из заказа
+        function removeLastItem() {
+            if (state.selectedItems.length === 0) return;
+
+            const lastItem = state.selectedItems.pop();
+            state.total -= lastItem.price;
+
+            // Обновляем отображение
+            updateSelectedItems();
+            updateTotal();
+
+            // Сбрасываем выделение
+            state.selectedItemIndex = -1;
+        }
+
+        // Обновить список выбранных товаров
+        function updateSelectedItems() {
+            let html = '';
+
+            state.selectedItems.forEach((item, index) => {
+                const isSelected = index === state.selectedItemIndex;
+                html += `
+                                <div class="selected-item ${isSelected ? 'selected' : ''}"
+                                     data-index="${index}">
+                                    <span>### 1 ${item.name} ${item.price.toFixed(2)}</span>
+                                    <span class="help-icon">?</span>
+                                </div>
+                            `;
+            });
+
+            elements.selectedItems.innerHTML = html || '<!-- Выбранные элементы будут здесь -->';
+
+            // Добавляем обработчики клика на элементы
+            document.querySelectorAll('.selected-item').forEach(item => {
+                item.addEventListener('click', function () {
+                    state.selectedItemIndex = parseInt(this.dataset.index);
+                    highlightSelectedItem();
+                });
+            });
+        }
+
+        // Выделить выбранный элемент
+        function highlightSelectedItem() {
+            document.querySelectorAll('.selected-item').forEach((item, index) => {
+                if (index === state.selectedItemIndex) {
+                    item.classList.add('selected');
+                } else {
+                    item.classList.remove('selected');
+                }
+            });
+        }
+
+        // Обновить общую сумму
+        function updateTotal() {
+            elements.payBtn.innerHTML = `Оплатить Рубли:<br>${state.total.toFixed(2)}`;
+        }
+
+        // Запускаем приложение при загрузке страницы
+        document.addEventListener('DOMContentLoaded', init);
+    </script>
+</body>
+</html>
