@@ -105,7 +105,7 @@
 
         .categories {
             display: grid;
-            grid-template-columns: 1fr 1fr;
+            grid-template-columns: 1fr 1fr 1fr;
             gap: 8px;
         }
 
@@ -337,6 +337,10 @@
             .modal-message {
                 font-size: 1em;
             }
+
+            .categories {
+                grid-template-columns: 1fr 1fr;
+            }
         }
 
         /* Десктопная версия */
@@ -352,7 +356,7 @@
             }
 
             .controls {
-                width: 340px;
+                width: 365px;
                 flex-direction: row;
             }
 
@@ -361,7 +365,7 @@
             }
 
             .categories {
-                grid-template-columns: 1fr 1fr;
+                grid-template-columns: 1fr 1fr 1fr;
             }
 
             body {
@@ -402,6 +406,10 @@
             color: #666666 !important;
             cursor: not-allowed !important;
             opacity: 0.7 !important;
+        }
+
+        .nav-btn {
+            background-color: #8F633D !important;
         }
     </style>
 </head>
@@ -470,27 +478,65 @@
                 items: [
                     { name: 'Горячие на вынос', type: 'subcategory' },
                     { name: 'Горячие Напитки', type: 'subcategory' },
-                    { name: 'Бесплатный кофе', type: 'inactive' },
+                    { name: 'Бесплатный кофе', type: 'subcategory' },
                     { name: 'Картонный сертификат', type: 'inactive' }
                 ]
             },
             'Горячие на вынос': [
                 { name: 'Flat white', price: 200 },
+                { name: 'Ассам 0.5', price: 200 },
                 { name: 'Аффогато Ваниль', price: 220 },
+                { name: 'Аффогато Клубника', price: 220 },
+                { name: 'Аффогато матча Ваниль', price: 220 },
+                { name: 'Аффогато матча Клубника', price: 220 },
+                { name: 'Аффогато матча Шоколад', price: 220 },
+                { name: 'Аффогато Шоколад', price: 220 },
                 { name: 'Аэрокано', price: 180 },
+                { name: 'Большой Flat White', price: 180 },
                 { name: 'Банановый какао', price: 210 },
+                { name: 'Большой Американо', price: 180 },
+                { name: 'Большой Американо + молоко', price: 180 },
                 { name: 'Большой Капучино', price: 180 },
-                { name: 'Большой Латте', price: 200 }
+                { name: 'Большой Латте', price: 200 },
+                { name: 'Большой Матча Латте', price: 200 }
+            ],
+            'Бесплатный кофе': [
+                { name: 'Flat white', price: 200 },
+                { name: 'Ассам 0.5', price: 200 },
+                { name: 'Аффогато Ваниль', price: 220 },
+                { name: 'Аффогато Клубника', price: 220 },
+                { name: 'Аффогато матча Ваниль', price: 220 },
+                { name: 'Аффогато матча Клубника', price: 220 },
+                { name: 'Аффогато матча Шоколад', price: 220 },
+                { name: 'Аффогато Шоколад', price: 220 },
+                { name: 'Аэрокано', price: 180 },
+                { name: 'Большой Flat White', price: 180 },
+                { name: 'Банановый какао', price: 210 },
+                { name: 'Большой Американо', price: 180 },
+                { name: 'Большой Американо + молоко', price: 180 },
+                { name: 'Большой Капучино', price: 180 },
+                { name: 'Большой Латте', price: 200 },
+                { name: 'Большой Матча Латте', price: 200 }
             ],
             'Горячие Напитки': [
                 { name: 'Flat white', price: 200 },
+                { name: 'Ассам 0.5', price: 200 },
                 { name: 'Аффогато Ваниль', price: 220 },
+                { name: 'Аффогато Клубника', price: 220 },
+                { name: 'Аффогато матча Ваниль', price: 220 },
+                { name: 'Аффогато матча Клубника', price: 220 },
+                { name: 'Аффогато матча Шоколад', price: 220 },
+                { name: 'Аффогато Шоколад', price: 220 },
                 { name: 'Аэрокано', price: 180 },
+                { name: 'Большой Flat White', price: 180 },
                 { name: 'Банановый какао', price: 210 },
+                { name: 'Большой Американо', price: 180 },
+                { name: 'Большой Американо + молоко', price: 180 },
                 { name: 'Большой Капучино', price: 180 },
-                { name: 'Большой Латте', price: 200 }
+                { name: 'Большой Латте', price: 200 },
+                { name: 'Большой Матча Латте', price: 200 }
             ],
-            
+
             'Холодные напитки': [
                 { name: 'Айс латте', price: 200 },
                 { name: 'Лимонад', price: 150 },
@@ -501,10 +547,10 @@
                 { name: 'На месте', price: 0 }
             ],
             'Сироп': [
-                { name: 'Ванильный', price: 30 },
-                { name: 'Карамельный', price: 30 },
-                { name: 'Шоколадный', price: 30 },
-                { name: 'Малиновый', price: 30 }
+                { name: 'Сироп Ваниль', price: 30 },
+                { name: 'Сироп Карамель', price: 30 },
+                { name: 'Сироп Шоколад', price: 30 },
+                { name: 'Сироп Малина', price: 30 }
             ],
             'Завтрак': [
                 { name: 'Завтрак №1', price: 350, type: 'breakfast' },
@@ -532,7 +578,9 @@
             tasks: [],
             completedTasks: 0,
             categoryStack: [], // Стек для отслеживания текущей категории
-            productSources: {} // Хранит информацию о том, из какой подкатегории был выбран продукт
+            productSources: {}, // Хранит информацию о том, из какой подкатегории был выбран продукт
+            currentPage: 0, // Текущая страница категорий
+            itemsPerPage: 5 // Количество категорий на странице
         };
 
         // DOM элементы
@@ -591,9 +639,9 @@
                 const task = state.tasks[index];
                 elements.taskText.textContent = task.task;
                 clearAllItems();
-                
+
                 // Сообщаем родительскому окну о текущем задании
-                window.parent.postMessage({ 
+                window.parent.postMessage({
                     action: 'taskCompleted',
                     currentTaskIndex: index
                 }, '*');
@@ -606,46 +654,46 @@
         // Проверка задания
         function checkTask() {
             const currentTask = state.tasks[state.currentTaskIndex];
-            
+
             // Проверяем первое задание - "Гость заказал большой капучино с собой"
             if (state.currentTaskIndex === 0) {
                 // Проверяем, что выбраны 2 элемента: "С собой" и "Большой Капучино"
                 if (state.selectedItems.length !== 2) {
-                    showModal('Ошибка', 'Нужно выбрать два элемента: "С собой" и "Большой Капучино"', 'error');
+                    showModal('Ошибка', 'Один из элементов выбран неверно"', 'error');
                     return;
                 }
-                
+
                 // Проверяем, что первый элемент - "С собой" из модификаторов
-                if (state.selectedItems[0].name !== 'С собой' || 
+                if (state.selectedItems[0].name !== 'С собой' ||
                     state.productSources[state.selectedItems[0].name] !== 'Модификаторы') {
-                    showModal('Ошибка', 'Первый элемент должен быть "С собой" из категории "Модификаторы"', 'error');
+                    showModal('Ошибка', 'Один из элементов выбран неверно"', 'error');
                     return;
                 }
-                
+
                 // Проверяем, что второй элемент - "Большой Капучино" из "Горячие на вынос"
-                if (state.selectedItems[1].name !== 'Большой Капучино' || 
+                if (state.selectedItems[1].name !== 'Большой Капучино' ||
                     state.productSources[state.selectedItems[1].name] !== 'Горячие на вынос') {
-                    showModal('Ошибка', 'Второй элемент должен быть "Большой Капучино" из подкатегории "Горячие на вынос"', 'error');
+                    showModal('Ошибка', 'один из элементов выбран неверно"', 'error');
                     return;
                 }
-                
+
                 // Проверяем порядок элементов
                 if (state.selectedItems[0].name !== 'С собой' || state.selectedItems[1].name !== 'Большой Капучино') {
-                    showModal('Ошибка', 'Порядок элементов неверный. Сначала должен быть модификатор "С собой", затем "Большой Капучино"', 'error');
+                    showModal('Ошибка', 'Порядок элементов неверный', 'error');
                     return;
                 }
-                
+
                 // Если все проверки пройдены
                 showModal('Правильно!', 'Вы успешно выполнили задание.', 'success');
                 state.completedTasks++;
-                
+
                 // Если выполнены все задания, сообщаем родительскому окну
                 if (state.completedTasks === state.tasks.length) {
                     window.parent.postMessage({ action: 'completeAllTasks' }, '*');
                 }
                 return;
             }
-            
+
             // Проверка для остальных заданий (как было раньше)
             const userAnswer = state.selectedItems.map(item => item.name).join(', ');
             const correctAnswer = currentTask.answer;
@@ -721,21 +769,31 @@
                 let html = '<div class="categories">';
 
                 // Кнопка "Назад"
-                html += `<button class="category-btn back-btn">←</button>`;
+                html += `<button class="category-btn nav-btn back-btn">←</button>`;
+
+                // Получаем подкатегории для текущей страницы
+                const startIndex = state.currentPage * state.itemsPerPage;
+                const endIndex = Math.min(startIndex + state.itemsPerPage, categoryData.items.length);
+                const itemsToShow = categoryData.items.slice(startIndex, endIndex);
 
                 // Кнопки подкатегорий
-                categoryData.items.forEach(item => {
+                itemsToShow.forEach(item => {
                     if (item.type === 'inactive') {
                         html += `<button class="category-btn disabled-btn" disabled>
-                                                 ${item.name}
-                                                 </button>`;
+                                                         ${item.name}
+                                                         </button>`;
                     } else {
                         html += `<button class="category-btn subcategory-btn"
-                                                     data-category="${item.name}">
-                                                     ${item.name}
-                                                     </button>`;
+                                                             data-category="${item.name}">
+                                                             ${item.name}
+                                                             </button>`;
                     }
                 });
+
+                // Добавляем кнопку "Вниз", если есть еще элементы
+                if (endIndex < categoryData.items.length) {
+                    html += `<button class="category-btn nav-btn next-btn">↓</button>`;
+                }
 
                 html += '</div>';
 
@@ -743,9 +801,15 @@
                 elements.categoriesSection.innerHTML = html;
 
                 // Добавляем обработчики
-                document.querySelector('.back-btn').addEventListener('click', goBackCategory);
+                document.querySelector('.back-btn')?.addEventListener('click', goBackCategory);
+                document.querySelector('.next-btn')?.addEventListener('click', function () {
+                    state.currentPage++;
+                    showProducts(category);
+                });
+
                 document.querySelectorAll('.subcategory-btn').forEach(btn => {
                     btn.addEventListener('click', function () {
+                        state.currentPage = 0; // Сбрасываем страницу при выборе новой категории
                         showProducts(this.dataset.category);
                     });
                 });
@@ -757,17 +821,27 @@
                 let html = '<div class="categories">';
 
                 // Кнопка "Назад"
-                html += `<button class="category-btn back-btn">←</button>`;
+                html += `<button class="category-btn nav-btn back-btn">←</button>`;
+
+                // Получаем товары для текущей страницы
+                const startIndex = state.currentPage * state.itemsPerPage;
+                const endIndex = Math.min(startIndex + state.itemsPerPage, products.length);
+                const itemsToShow = products.slice(startIndex, endIndex);
 
                 // Кнопки товаров
-                products.forEach(product => {
+                itemsToShow.forEach(product => {
                     html += `<button class="category-btn product-btn"
-                                                     data-name="${product.name}"
-                                                     data-price="${product.price}"
-                                                     ${product.type ? `data-type="${product.type}"` : ''}>
-                                                     ${product.name}
-                                                     </button>`;
+                                                             data-name="${product.name}"
+                                                             data-price="${product.price}"
+                                                             ${product.type ? `data-type="${product.type}"` : ''}>
+                                                             ${product.name}
+                                                             </button>`;
                 });
+
+                // Добавляем кнопку "Вниз", если есть еще элементы
+                if (endIndex < products.length) {
+                    html += `<button class="category-btn nav-btn next-btn">↓</button>`;
+                }
 
                 html += '</div>';
 
@@ -775,7 +849,12 @@
                 elements.categoriesSection.innerHTML = html;
 
                 // Добавляем обработчики
-                document.querySelector('.back-btn').addEventListener('click', goBackCategory);
+                document.querySelector('.back-btn')?.addEventListener('click', goBackCategory);
+                document.querySelector('.next-btn')?.addEventListener('click', function () {
+                    state.currentPage++;
+                    showProducts(category);
+                });
+
                 document.querySelectorAll('.product-btn').forEach(btn => {
                     btn.addEventListener('click', function () {
                         if (this.dataset.type === 'breakfast') {
@@ -792,6 +871,7 @@
 
         // Вернуться на предыдущую категорию
         function goBackCategory() {
+            state.currentPage = 0; // Сбрасываем страницу при возврате
             if (state.categoryStack.length > 1) {
                 state.categoryStack.pop(); // Удаляем текущую категорию
                 const prevCategory = state.categoryStack[state.categoryStack.length - 1];
@@ -808,17 +888,18 @@
             if (state.paymentMode) return;
 
             state.categoryStack = []; // Очищаем стек категорий
+            state.currentPage = 0; // Сбрасываем страницу
 
             const html = `
-                    <div class="categories">
-                        <button class="category-btn" data-category="Горячие напитки">Горячие<br>напитки</button>
-                        <button class="category-btn" data-category="Холодные напитки">Холодные<br>напитки</button>
-                        <button class="category-btn" data-category="Модификаторы">Модификаторы</button>
-                        <button class="category-btn" data-category="Сироп">Сироп</button>
-                        <button class="category-btn" data-category="Завтрак">Завтрак</button>
-                        <button class="category-btn" data-category="Десерты">Десерты</button>
-                    </div>
-                `;
+                            <div class="categories">
+                                <button class="category-btn" data-category="Горячие напитки">Горячие<br>напитки</button>
+                                <button class="category-btn" data-category="Холодные напитки">Холодные<br>напитки</button>
+                                <button class="category-btn" data-category="Модификаторы">Модификаторы</button>
+                                <button class="category-btn" data-category="Сироп">Сироп</button>
+                                <button class="category-btn" data-category="Завтрак">Завтрак</button>
+                                <button class="category-btn" data-category="Десерты">Десерты</button>
+                            </div>
+                        `;
 
             elements.categoriesSection.innerHTML = html;
 
@@ -826,6 +907,7 @@
             document.querySelectorAll('.category-btn').forEach(btn => {
                 btn.addEventListener('click', () => {
                     const category = btn.dataset.category;
+                    state.currentPage = 0; // Сбрасываем страницу при выборе новой категории
                     showProducts(category);
                 });
             });
@@ -836,7 +918,7 @@
             // Добавляем товар в состояние
             state.selectedItems.push({ name, price });
             state.total += price;
-            
+
             // Сохраняем информацию о том, из какой категории был выбран продукт
             state.productSources[name] = sourceCategory;
 
@@ -850,6 +932,7 @@
 
             // Возвращаемся к главным категориям
             state.categoryStack = [];
+            state.currentPage = 0; // Сбрасываем страницу
             showMainCategories();
         }
 
@@ -866,7 +949,7 @@
             // Удаляем выбранный элемент
             const removedItem = state.selectedItems.splice(state.selectedItemIndex, 1)[0];
             state.total -= removedItem.price;
-            
+
             // Удаляем информацию о категории продукта
             delete state.productSources[removedItem.name];
 
@@ -884,7 +967,7 @@
 
             const lastItem = state.selectedItems.pop();
             state.total -= lastItem.price;
-            
+
             // Удаляем информацию о категории продукта
             delete state.productSources[lastItem.name];
 
@@ -903,12 +986,12 @@
             state.selectedItems.forEach((item, index) => {
                 const isSelected = index === state.selectedItemIndex;
                 html += `
-                        <div class="selected-item ${isSelected ? 'selected' : ''}"
-                             data-index="${index}">
-                            <span>### 1 ${item.name} ${item.price.toFixed(2)}</span>
-                            <span class="help-icon">?</span>
-                        </div>
-                    `;
+                                <div class="selected-item ${isSelected ? 'selected' : ''}"
+                                     data-index="${index}">
+                                    <span>### 1 ${item.name} ${item.price.toFixed(2)}</span>
+                                    <span class="help-icon">?</span>
+                                </div>
+                            `;
             });
 
             elements.selectedItems.innerHTML = html || '<!-- Выбранные элементы будут здесь -->';
