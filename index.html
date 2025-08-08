@@ -356,7 +356,7 @@
             }
 
             .controls {
-                width: 365px;
+                width: 392px;
                 flex-direction: row;
             }
 
@@ -369,7 +369,7 @@
             }
 
             body {
-                font-size: 15px;
+                font-size: 12px;
             }
 
             .task-description h3 {
@@ -473,6 +473,33 @@
     <script>
         // Данные о товарах по категориям
         const productsData = {
+            'Альтернативное молоко': {
+                type: 'subcategories',
+                items: [
+                    { name: 'Альтернативное Большой', price: 80 },
+                    { name: 'Альтернативное Маленький', price: 60 },
+                    { name: 'Безлактозное Большой', price: 80 },
+                    { name: 'Безлактозное Маленький', price: 60 }
+                ],
+
+            },
+            'Бутылированная продукция': [
+                { name: 'Без кода', price: 200 },
+                { name: 'C100', price: 200 },
+                { name: 'Чай пи', price: 220 },
+                { name: 'Aqua б/г', price: 220 },
+                { name: 'Aqua газ', price: 220 },
+                { name: 'Coca-Cola', price: 220 },
+                { name: 'Dr Pepper Ваниль', price: 220 },
+                { name: 'Dr Pepper Вишня', price: 220 },
+                { name: 'Dr Pepper Ежевика', price: 180 },
+                { name: 'Dr Pepper Крем Сода', price: 180 },
+                { name: 'Вода детская', price: 210 },
+                { name: 'Кофе с вишней', price: 180 },
+                { name: 'Лимонад', price: 180 },
+                { name: 'Сок Апельсиновый', price: 180 },
+                { name: 'Сок Яблочный', price: 200 },
+            ],
             'Горячие напитки': {
                 type: 'subcategories',
                 items: [
@@ -536,6 +563,27 @@
                 { name: 'Большой Латте', price: 200 },
                 { name: 'Большой Матча Латте', price: 200 }
             ],
+            'Десерты': [
+                { name: 'Чизкейк', price: 300 },
+                { name: 'Тирамису', price: 350 },
+                { name: 'Сырники', price: 280 },
+                { name: 'Малиновый пончик', price: 150 },
+                { name: 'Шоколадный пончик', price: 150 }
+            ],
+            'Допы Гор.Нап.': [
+                { name: 'Чизкейк', price: 300 },
+                { name: 'Тирамису', price: 350 },
+                { name: 'Сырники', price: 280 },
+                { name: 'Малиновый пончик', price: 150 },
+                { name: 'Шоколадный пончик', price: 150 }
+            ],
+            'Допы десерты': [
+                { name: 'Чизкейк', price: 300 },
+                { name: 'Тирамису', price: 350 },
+                { name: 'Сырники', price: 280 },
+                { name: 'Малиновый пончик', price: 150 },
+                { name: 'Шоколадный пончик', price: 150 }
+            ],
 
             'Холодные напитки': [
                 { name: 'Айс латте', price: 200 },
@@ -557,13 +605,7 @@
                 { name: 'Завтрак №2', price: 400, type: 'breakfast' },
                 { name: 'Завтрак №3', price: 450, type: 'breakfast' }
             ],
-            'Десерты': [
-                { name: 'Чизкейк', price: 300 },
-                { name: 'Тирамису', price: 350 },
-                { name: 'Сырники', price: 280 },
-                { name: 'Малиновый пончик', price: 150 },
-                { name: 'Шоколадный пончик', price: 150 }
-            ]
+
         };
 
         // Текущее состояние
@@ -577,10 +619,10 @@
             currentTaskIndex: 0,
             tasks: [],
             completedTasks: 0,
-            categoryStack: [], // Стек для отслеживания текущей категории
-            productSources: {}, // Хранит информацию о том, из какой подкатегории был выбран продукт
-            currentPage: 0, // Текущая страница категорий
-            itemsPerPage: 5 // Количество категорий на странице
+            categoryStack: [],
+            productSources: {},
+            currentPage: 0,
+            itemsPerPage: 6 // Увеличим количество элементов на странице для лучшего отображения
         };
 
         // DOM элементы
@@ -758,14 +800,15 @@
             if (state.paymentMode) return;
 
             // Добавляем категорию в стек
-            state.categoryStack.push(category);
+            if (state.categoryStack[state.categoryStack.length - 1] !== category) {
+                state.categoryStack.push(category);
+            }
 
             const categoryData = productsData[category];
             if (!categoryData) return;
 
             // Проверяем, есть ли подкатегории
             if (categoryData.type === 'subcategories') {
-                // Создаем HTML для подкатегорий
                 let html = '<div class="categories">';
 
                 // Кнопка "Назад"
@@ -779,14 +822,9 @@
                 // Кнопки подкатегорий
                 itemsToShow.forEach(item => {
                     if (item.type === 'inactive') {
-                        html += `<button class="category-btn disabled-btn" disabled>
-                                                         ${item.name}
-                                                         </button>`;
+                        html += `<button class="category-btn disabled-btn" disabled>${item.name}</button>`;
                     } else {
-                        html += `<button class="category-btn subcategory-btn"
-                                                             data-category="${item.name}">
-                                                             ${item.name}
-                                                             </button>`;
+                        html += `<button class="category-btn subcategory-btn" data-category="${item.name}">${item.name}</button>`;
                     }
                 });
 
@@ -797,7 +835,6 @@
 
                 html += '</div>';
 
-                // Заменяем содержимое секции категорий
                 elements.categoriesSection.innerHTML = html;
 
                 // Добавляем обработчики
@@ -809,7 +846,7 @@
 
                 document.querySelectorAll('.subcategory-btn').forEach(btn => {
                     btn.addEventListener('click', function () {
-                        state.currentPage = 0; // Сбрасываем страницу при выборе новой категории
+                        state.currentPage = 0;
                         showProducts(this.dataset.category);
                     });
                 });
@@ -817,7 +854,6 @@
                 // Это конечная категория с товарами
                 const products = categoryData;
 
-                // Создаем HTML для товаров
                 let html = '<div class="categories">';
 
                 // Кнопка "Назад"
@@ -831,11 +867,11 @@
                 // Кнопки товаров
                 itemsToShow.forEach(product => {
                     html += `<button class="category-btn product-btn"
-                                                             data-name="${product.name}"
-                                                             data-price="${product.price}"
-                                                             ${product.type ? `data-type="${product.type}"` : ''}>
-                                                             ${product.name}
-                                                             </button>`;
+                             data-name="${product.name}"
+                             data-price="${product.price}"
+                             ${product.type ? `data-type="${product.type}"` : ''}>
+                             ${product.name}
+                         </button>`;
                 });
 
                 // Добавляем кнопку "Вниз", если есть еще элементы
@@ -845,7 +881,6 @@
 
                 html += '</div>';
 
-                // Заменяем содержимое секции категорий
                 elements.categoriesSection.innerHTML = html;
 
                 // Добавляем обработчики
@@ -860,26 +895,11 @@
                         if (this.dataset.type === 'breakfast') {
                             startBreakfastSelection(this.dataset.name, parseFloat(this.dataset.price));
                         } else {
-                            // Запоминаем, из какой категории был выбран продукт
                             const sourceCategory = state.categoryStack[state.categoryStack.length - 1];
                             addItem(this.dataset.name, parseFloat(this.dataset.price), sourceCategory);
                         }
                     });
                 });
-            }
-        }
-
-        // Вернуться на предыдущую категорию
-        function goBackCategory() {
-            state.currentPage = 0; // Сбрасываем страницу при возврате
-            if (state.categoryStack.length > 1) {
-                state.categoryStack.pop(); // Удаляем текущую категорию
-                const prevCategory = state.categoryStack[state.categoryStack.length - 1];
-                showProducts(prevCategory);
-            } else {
-                // Если стек пуст или содержит только одну категорию, показываем главные категории
-                state.categoryStack = [];
-                showMainCategories();
             }
         }
 
@@ -890,27 +910,82 @@
             state.categoryStack = []; // Очищаем стек категорий
             state.currentPage = 0; // Сбрасываем страницу
 
-            const html = `
-                            <div class="categories">
-                                <button class="category-btn" data-category="Горячие напитки">Горячие<br>напитки</button>
-                                <button class="category-btn" data-category="Холодные напитки">Холодные<br>напитки</button>
-                                <button class="category-btn" data-category="Модификаторы">Модификаторы</button>
-                                <button class="category-btn" data-category="Сироп">Сироп</button>
-                                <button class="category-btn" data-category="Завтрак">Завтрак</button>
-                                <button class="category-btn" data-category="Десерты">Десерты</button>
-                            </div>
-                        `;
+            // Получаем все главные категории
+            const mainCategories = [
+                'Альтернативное молоко', 'Бутылированная продукция', 'Горячие напитки',
+                'Десерты', 'Допы гор.нап.', 'Допы десерты', 'ЕДА', 'Завтрак',
+                'Модификаторы', 'Напитки по купонам', 'Персонал', 'Сезонное меню',
+                'Сироп', 'Холодные напитки', 'Штучный товар'
+            ];
+
+            // Получаем категории для текущей страницы
+            const startIndex = state.currentPage * state.itemsPerPage;
+            const endIndex = Math.min(startIndex + state.itemsPerPage, mainCategories.length);
+            const itemsToShow = mainCategories.slice(startIndex, endIndex);
+
+            // Создаем HTML
+            let html = '<div class="categories">';
+
+            // Добавляем кнопку "Назад" только если мы не на первой странице
+            if (state.currentPage > 0) {
+                html += `<button class="category-btn nav-btn prev-btn">↑</button>`;
+            }
+
+            // Добавляем кнопки категорий
+            mainCategories.forEach(category => {
+                const displayName = category.replace(' ', '<br>');
+                html += `<button class="category-btn" data-category="${category}">${displayName}</button>`;
+            });
+
+            // Добавляем кнопку "Вниз", если есть еще элементы
+            
+
+            html += '</div>';
 
             elements.categoriesSection.innerHTML = html;
 
-            // Снова добавляем обработчики
-            document.querySelectorAll('.category-btn').forEach(btn => {
+            // Добавляем обработчики для категорий
+            document.querySelectorAll('.category-btn:not(.nav-btn)').forEach(btn => {
                 btn.addEventListener('click', () => {
                     const category = btn.dataset.category;
                     state.currentPage = 0; // Сбрасываем страницу при выборе новой категории
                     showProducts(category);
                 });
             });
+
+            // Обработчик для кнопки "Вниз"
+            const nextBtn = document.querySelector('.next-btn');
+            if (nextBtn) {
+                nextBtn.addEventListener('click', function () {
+                    state.currentPage++;
+                    showMainCategories();
+                });
+            }
+
+            // Обработчик для кнопки "Наверх"
+            const prevBtn = document.querySelector('.prev-btn');
+            if (prevBtn) {
+                prevBtn.addEventListener('click', function () {
+                    state.currentPage--;
+                    showMainCategories();
+                });
+            }
+        }
+
+        // Вернуться на предыдущую категорию
+        function goBackCategory() {
+            state.currentPage = 0; // Сбрасываем страницу при возврате
+            if (state.categoryStack.length > 0) {
+                state.categoryStack.pop(); // Удаляем текущую категорию
+                if (state.categoryStack.length > 0) {
+                    const prevCategory = state.categoryStack[state.categoryStack.length - 1];
+                    showProducts(prevCategory);
+                } else {
+                    showMainCategories();
+                }
+            } else {
+                showMainCategories();
+            }
         }
 
         // Добавить товар в заказ
@@ -986,15 +1061,15 @@
             state.selectedItems.forEach((item, index) => {
                 const isSelected = index === state.selectedItemIndex;
                 html += `
-                                <div class="selected-item ${isSelected ? 'selected' : ''}"
-                                     data-index="${index}">
-                                    <span>### 1 ${item.name} ${item.price.toFixed(2)}</span>
-                                    <span class="help-icon">?</span>
-                                </div>
-                            `;
+                                    <div class="selected-item ${isSelected ? 'selected' : ''}"
+                                         data-index="${index}">
+                                        <span>### 1 ${item.name} ${item.price.toFixed(2)}</span>
+                                    </div>
+                                `;
             });
 
             elements.selectedItems.innerHTML = html || '<!-- Выбранные элементы будут здесь -->';
+
 
             // Добавляем обработчики клика на элементы
             document.querySelectorAll('.selected-item').forEach(item => {
