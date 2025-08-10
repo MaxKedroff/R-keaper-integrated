@@ -563,10 +563,17 @@
                 { name: 'Большой Латте', price: 200 },
                 { name: 'Большой Матча Латте', price: 200 }
             ],
-            'Десерты': [
-                { name: 'Чизкейк', price: 300 },
-                { name: 'Тирамису', price: 350 },
-                { name: 'Сырники', price: 280 },
+            'Десерты': {
+                type: 'subcategories',
+                items: [
+                    { name: 'Пончики', type: 'subcategory' },
+                    { name: 'Чизкейк', price: 300 },
+                    { name: 'Тирамису', price: 350 },
+                    { name: 'Сырники', price: 280 }
+                ]
+            },
+
+            'Пончики': [
                 { name: 'Малиновый пончик', price: 150 },
                 { name: 'Шоколадный пончик', price: 150 }
             ],
@@ -903,6 +910,13 @@
             }
         }
 
+        // Вернуться на предыдущую категорию
+
+
+        // Показать главные категории
+        // Показать главные категории
+        // ... (предыдущий код остается без изменений до функции showMainCategories)
+
         // Показать главные категории
         function showMainCategories() {
             if (state.paymentMode) return;
@@ -937,7 +951,6 @@
                 html += `<button class="category-btn" data-category="${category}">${displayName}</button>`;
             });
 
-            // Добавляем кнопку "Вниз", если есть еще элементы
             
 
             html += '</div>';
@@ -988,6 +1001,7 @@
             }
         }
 
+        // ... (остальной код остается без изменений)
         // Добавить товар в заказ
         function addItem(name, price, sourceCategory) {
             // Добавляем товар в состояние
