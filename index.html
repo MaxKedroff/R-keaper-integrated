@@ -190,6 +190,7 @@
             font-size: 0.8em;
             line-height: 1.2;
         }
+
         .modifier-item {
             padding-left: 20px;
             border-left: 3px solid #BF8F61;
@@ -740,34 +741,32 @@
         }
 
         // Проверка задания
+        // Проверка задания
         function checkTask() {
             const currentTask = state.tasks[state.currentTaskIndex];
 
-            // Проверяем первое задание - "Гость заказал большой капучино с собой"
-            if (state.currentTaskIndex === 0) {
-                // Проверяем, что выбраны 2 элемента: "С собой" и "Большой Капучино"
-                if (state.selectedItems.length !== 2) {
-                    showModal('Ошибка', 'Один из элементов выбран неверно"', 'error');
-                    return;
-                }
-
-                // Проверяем, что первый элемент - "С собой" из модификаторов
-                if (state.selectedItems[0].name !== 'С собой' ||
-                    state.productSources[state.selectedItems[0].name] !== 'Модификаторы') {
-                    showModal('Ошибка', 'Один из элементов выбран неверно"', 'error');
-                    return;
-                }
-
-                // Проверяем, что второй элемент - "Большой Капучино" из "Горячие на вынос"
-                if (state.selectedItems[1].name !== 'Большой Капучино' ||
-                    state.productSources[state.selectedItems[1].name] !== 'Горячие на вынос') {
-                    showModal('Ошибка', 'один из элементов выбран неверно"', 'error');
+            // Для второго задания (индекс 1) - "Очень горячий американо, но не крепкий с собой и побыстрее"
+            if (state.currentTaskIndex === 1) {
+                // Проверяем количество элементов (5: С собой, Американо, Адски горячий, На одном эспрессо, Побыстрее)
+                if (state.selectedItems.length !== 5) {
+                    showModal('Ошибка', 'Неверное количество элементов в заказе', 'error');
                     return;
                 }
 
                 // Проверяем порядок элементов
-                if (state.selectedItems[0].name !== 'С собой' || state.selectedItems[1].name !== 'Большой Капучино') {
+                const expectedOrder = ['С собой', 'Американо', 'Адски горячий', 'На одном эспрессо', 'Побыстрее'];
+                const isCorrectOrder = state.selectedItems.every((item, index) =>
+                    item.name === expectedOrder[index]
+                );
+
+                if (!isCorrectOrder) {
                     showModal('Ошибка', 'Порядок элементов неверный', 'error');
+                    return;
+                }
+
+                // Проверяем, что модификаторы идут после основного продукта
+                if (!state.selectedItems[2].isModifier || !state.selectedItems[3].isModifier) {
+                    showModal('Ошибка', 'Модификаторы должны быть привязаны к продукту', 'error');
                     return;
                 }
 
@@ -913,11 +912,11 @@
                 // Кнопки товаров
                 itemsToShow.forEach(product => {
                     html += `<button class="category-btn product-btn"
-                             data-name="${product.name}"
-                             data-price="${product.price}"
-                             ${product.type ? `data-type="${product.type}"` : ''}>
-                             ${product.name}
-                         </button>`;
+                                 data-name="${product.name}"
+                                 data-price="${product.price}"
+                                 ${product.type ? `data-type="${product.type}"` : ''}>
+                                 ${product.name}
+                             </button>`;
                 });
 
                 // Добавляем кнопку "Вниз", если есть еще элементы
@@ -990,7 +989,7 @@
                 html += `<button class="category-btn" data-category="${category}">${displayName}</button>`;
             });
 
-            
+
 
             html += '</div>';
 
@@ -1158,11 +1157,11 @@
                 const isModifier = item.isModifier;
 
                 html += `
-                    <div class="selected-item ${isSelected ? 'selected' : ''} ${isModifier ? 'modifier-item' : ''}"
-                         data-index="${index}">
-                        <span>### 1 ${item.name} ${item.price.toFixed(2)}</span>
-                    </div>
-                `;
+                        <div class="selected-item ${isSelected ? 'selected' : ''} ${isModifier ? 'modifier-item' : ''}"
+                             data-index="${index}">
+                            <span>### 1 ${item.name} ${item.price.toFixed(2)}</span>
+                        </div>
+                    `;
             });
 
             elements.selectedItems.innerHTML = html || '<!-- Выбранные элементы будут здесь -->';
