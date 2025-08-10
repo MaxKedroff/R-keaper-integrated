@@ -190,6 +190,12 @@
             font-size: 0.8em;
             line-height: 1.2;
         }
+        .modifier-item {
+            padding-left: 20px;
+            border-left: 3px solid #BF8F61;
+            margin-left: 10px;
+            color: #8F633D;
+        }
 
         .action-btns {
             display: flex;
@@ -599,7 +605,11 @@
             ],
             'Модификаторы': [
                 { name: 'С собой', price: 0 },
-                { name: 'На месте', price: 0 }
+                { name: 'На месте', price: 0 },
+                { name: 'Погорячее', price: 0 },
+                { name: 'Адски горячий', price: 0 },
+                { name: 'На одном эспрессо', price: 0 },
+                { name: 'На двух эспрессо', price: 0 },
             ],
             'Сироп': [
                 { name: 'Сироп Ваниль', price: 30 },
@@ -629,7 +639,9 @@
             categoryStack: [],
             productSources: {},
             currentPage: 0,
-            itemsPerPage: 6 // Увеличим количество элементов на странице для лучшего отображения
+            itemsPerPage: 6,
+            modifierMode: false, // Новое состояние для режима модификатора
+            modifierTargetIndex: -1 // Индекс элемента, к которому добавляем модификатор
         };
 
         // DOM элементы
@@ -679,7 +691,29 @@
             // Обработчик для кнопки модального окна
             elements.modalBtn.addEventListener('click', closeModal);
 
+            document.querySelector('.modifier-btn').addEventListener('click', toggleModifierMode);
+
+            // Включаем/выключаем кнопку модификатора
+            document.querySelector('.modifier-btn').style.opacity = '0.7';
+            document.querySelector('.modifier-btn').style.pointerEvents = 'none';
+
             showMainCategories();
+        }
+
+        function toggleModifierMode() {
+            if (state.selectedItemIndex === -1) return;
+
+            state.modifierMode = !state.modifierMode;
+
+            if (state.modifierMode) {
+                state.modifierTargetIndex = state.selectedItemIndex;
+                showProducts('Модификаторы');
+                document.querySelector('.modifier-btn').style.backgroundColor = '#4CAF50';
+            } else {
+                state.modifierTargetIndex = -1;
+                showMainCategories();
+                document.querySelector('.modifier-btn').style.backgroundColor = '#BF8F61';
+            }
         }
 
         // Загрузка задания
@@ -1004,8 +1038,32 @@
         // ... (остальной код остается без изменений)
         // Добавить товар в заказ
         function addItem(name, price, sourceCategory) {
-            // Добавляем товар в состояние
-            state.selectedItems.push({ name, price });
+            // Если в режиме модификатора, добавляем с отступом
+            if (state.modifierMode && state.modifierTargetIndex !== -1) {
+                // Находим позицию для вставки (после выбранного элемента)
+                const insertIndex = state.modifierTargetIndex + 1;
+
+                // Добавляем модификатор
+                state.selectedItems.splice(insertIndex, 0, {
+                    name,
+                    price,
+                    isModifier: true // Помечаем как модификатор
+                });
+
+                // Выходим из режима модификатора
+                state.modifierMode = false;
+                state.modifierTargetIndex = -1;
+                document.querySelector('.modifier-btn').style.backgroundColor = '#BF8F50';
+            } else {
+                // Обычное добавление элемента
+                state.selectedItems.push({
+                    name,
+                    price,
+                    isModifier: false
+                });
+            }
+
+            // Обновляем общую сумму
             state.total += price;
 
             // Сохраняем информацию о том, из какой категории был выбран продукт
@@ -1021,8 +1079,26 @@
 
             // Возвращаемся к главным категориям
             state.categoryStack = [];
-            state.currentPage = 0; // Сбрасываем страницу
+            state.currentPage = 0;
             showMainCategories();
+
+            // Обновляем состояние кнопки модификатора
+            updateModifierButtonState();
+        }
+
+        function updateModifierButtonState() {
+            const modifierBtn = document.querySelector('.modifier-btn');
+
+            if (state.selectedItemIndex !== -1) {
+                modifierBtn.style.opacity = '1';
+                modifierBtn.style.pointerEvents = 'auto';
+                modifierBtn.style.backgroundColor = state.modifierMode ? '#4CAF50' : '#BF8F61';
+            } else {
+                modifierBtn.style.opacity = '0.7';
+                modifierBtn.style.pointerEvents = 'none';
+                modifierBtn.style.backgroundColor = '#BF8F61';
+                state.modifierMode = false;
+            }
         }
 
         // Удалить выбранный товар из заказа
@@ -1074,22 +1150,24 @@
 
             state.selectedItems.forEach((item, index) => {
                 const isSelected = index === state.selectedItemIndex;
+                const isModifier = item.isModifier;
+
                 html += `
-                                    <div class="selected-item ${isSelected ? 'selected' : ''}"
-                                         data-index="${index}">
-                                        <span>### 1 ${item.name} ${item.price.toFixed(2)}</span>
-                                    </div>
-                                `;
+                    <div class="selected-item ${isSelected ? 'selected' : ''} ${isModifier ? 'modifier-item' : ''}"
+                         data-index="${index}">
+                        <span>### 1 ${item.name} ${item.price.toFixed(2)}</span>
+                    </div>
+                `;
             });
 
             elements.selectedItems.innerHTML = html || '<!-- Выбранные элементы будут здесь -->';
-
 
             // Добавляем обработчики клика на элементы
             document.querySelectorAll('.selected-item').forEach(item => {
                 item.addEventListener('click', function () {
                     state.selectedItemIndex = parseInt(this.dataset.index);
                     highlightSelectedItem();
+                    updateModifierButtonState();
                 });
             });
         }
