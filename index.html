@@ -530,8 +530,8 @@
                 { name: 'Большой Flat White', price: 180 },
                 { name: 'Банановый какао', price: 210 },
                 { name: 'Большой Американо', price: 180 },
-                { name: 'Большой Американо + молоко', price: 180 },
-                { name: 'Большой Капучино', price: 180 },
+                { name: 'Большой Американо + молоко', price: 160 },
+                { name: 'Большой капучино', price: 160 },
                 { name: 'Большой Латте', price: 200 },
                 { name: 'Большой Матча Латте', price: 200 }
             ],
@@ -549,7 +549,7 @@
                 { name: 'Банановый какао', price: 210 },
                 { name: 'Большой Американо', price: 180 },
                 { name: 'Большой Американо + молоко', price: 180 },
-                { name: 'Большой Капучино', price: 180 },
+                { name: 'Большой капучино', price: 180 },
                 { name: 'Большой Латте', price: 200 },
                 { name: 'Большой Матча Латте', price: 200 }
             ],
@@ -567,7 +567,7 @@
                 { name: 'Банановый какао', price: 210 },
                 { name: 'Большой Американо', price: 180 },
                 { name: 'Американо + молоко', price: 180 },
-                { name: 'Большой Капучино', price: 180 },
+                { name: 'Большой капучино', price: 200 },
                 { name: 'Большой Латте', price: 200 },
                 { name: 'Большой Матча Латте', price: 200 }
             ],
@@ -575,22 +575,33 @@
                 type: 'subcategories',
                 items: [
                     { name: 'Пончики', type: 'subcategory' },
+                    { name: 'Круассаны', type: 'subcategory' },
                     { name: 'Чизкейк', price: 300 },
                     { name: 'Тирамису', price: 350 },
-                    { name: 'Сырники', price: 280 }
+                    { name: 'Сырники', price: 280 },
+                    { name: 'Медовик', price: 320 },
+                    { name: 'Брусничный пирог', price: 280 },
+                    { name: 'Лимонный тарт', price: 290 }
                 ]
             },
             'ЕДА': {
                 type: 'subcategories',
                 items: [
-                    {name: 'Рапы', type: 'subcategory'}
+                    { name: 'Рапы', type: 'subcategory' },
+                    { name: 'Сэндвичи', type: 'subcategory' },
                 ]
             },
             'Рапы': [
-                { name: 'Рап цезарь', price: 150},
-
+                { name: 'Рап цезарь', price: 150 }
             ],
-
+            'Сэндвичи': [
+                { name: 'Сэндвич с бужениной', price: 250 },
+                { name: 'Сэндвич с курицей и беконом', price: 280 }
+            ],
+            'Круассаны': [
+                { name: 'Круассан сливочный', price: 120 },
+                { name: 'Круассан с шоколадом', price: 150 }
+            ],
             'Пончики': [
                 { name: 'Малиновый пончик', price: 150 },
                 { name: 'Шоколадный пончик', price: 150 }
@@ -630,19 +641,22 @@
                 { name: 'Три сахара', price: 0 },
                 { name: 'Подогреть', price: 0 },
                 { name: 'Холодный', price: 0 },
+                { name: 'Корица', price: 0 }
             ],
             'Сироп': [
                 { name: 'Сироп Ваниль', price: 30 },
                 { name: 'Сироп Карамель', price: 30 },
+                { name: 'Сироп карамель', price: 30 },
                 { name: 'Сироп Шоколад', price: 30 },
-                { name: 'Сироп Малина', price: 30 }
+                { name: 'Сироп Малина', price: 30 },
+                { name: 'Сироп кокос', price: 30 },
+                { name: 'Корица', price: 0 }
             ],
             'Завтрак': [
                 { name: 'Завтрак №1', price: 350, type: 'breakfast' },
                 { name: 'Завтрак №2', price: 400, type: 'breakfast' },
                 { name: 'Завтрак №3', price: 450, type: 'breakfast' }
-            ],
-
+            ]
         };
 
         // Текущее состояние
@@ -870,7 +884,7 @@
             if (categoryData.type === 'subcategories') {
                 let html = '<div class="categories">';
 
-                // Кнопка "Назад"
+                // ИСПРАВЛЕНИЕ: Всегда показываем кнопку "Назад" первой
                 html += `<button class="category-btn nav-btn back-btn">←</button>`;
 
                 // Получаем подкатегории для текущей страницы
@@ -878,12 +892,21 @@
                 const endIndex = Math.min(startIndex + state.itemsPerPage, categoryData.items.length);
                 const itemsToShow = categoryData.items.slice(startIndex, endIndex);
 
-                // Кнопки подкатегорий
+                // Кнопки подкатегорий и товаров
                 itemsToShow.forEach(item => {
-                    if (item.type === 'inactive') {
-                        html += `<button class="category-btn disabled-btn" disabled>${item.name}</button>`;
-                    } else {
+                    if (item.type === 'subcategory') {
+                        // Это подкатегория - делаем кнопку для перехода
                         html += `<button class="category-btn subcategory-btn" data-category="${item.name}">${item.name}</button>`;
+                    } else if (item.price !== undefined) {
+                        // Это готовый товар - делаем кнопку для добавления
+                        html += `<button class="category-btn product-btn"
+                                 data-name="${item.name}"
+                                 data-price="${item.price}">
+                                 ${item.name}
+                             </button>`;
+                    } else if (item.type === 'inactive') {
+                        // Неактивный элемент
+                        html += `<button class="category-btn disabled-btn" disabled>${item.name}</button>`;
                     }
                 });
 
@@ -909,13 +932,20 @@
                         showProducts(this.dataset.category);
                     });
                 });
+
+                document.querySelectorAll('.product-btn').forEach(btn => {
+                    btn.addEventListener('click', function () {
+                        const sourceCategory = state.categoryStack[state.categoryStack.length - 1];
+                        addItem(this.dataset.name, parseFloat(this.dataset.price), sourceCategory);
+                    });
+                });
             } else {
-                // Это конечная категория с товарами
+                // Это конечная категория с товарами (массив)
                 const products = categoryData;
 
                 let html = '<div class="categories">';
 
-                // Кнопка "Назад"
+                // ИСПРАВЛЕНИЕ: Всегда показываем кнопку "Назад" первой
                 html += `<button class="category-btn nav-btn back-btn">←</button>`;
 
                 // Получаем товары для текущей страницы
@@ -926,11 +956,11 @@
                 // Кнопки товаров
                 itemsToShow.forEach(product => {
                     html += `<button class="category-btn product-btn"
-                                 data-name="${product.name}"
-                                 data-price="${product.price}"
-                                 ${product.type ? `data-type="${product.type}"` : ''}>
-                                 ${product.name}
-                             </button>`;
+                             data-name="${product.name}"
+                             data-price="${product.price}"
+                             ${product.type ? `data-type="${product.type}"` : ''}>
+                             ${product.name}
+                         </button>`;
                 });
 
                 // Добавляем кнопку "Вниз", если есть еще элементы
@@ -1000,7 +1030,15 @@
             // Добавляем кнопки категорий
             mainCategories.forEach(category => {
                 const displayName = category.replace(' ', '<br>');
-                html += `<button class="category-btn" data-category="${category}">${displayName}</button>`;
+                const isDisabled = ["Альтернативное молоко", "Бутылированная продукция",
+                    "Допы гор.нап.", "Допы десерты",
+                    "Напитки по купонам", "Персонал"].includes(category);
+
+                html += `<button class="category-btn ${isDisabled ? 'disabled-btn' : ''}"
+          data-category="${category}"
+          ${isDisabled ? 'disabled' : ''}>
+          ${displayName}
+  </button>`;
             });
 
 
