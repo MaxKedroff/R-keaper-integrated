@@ -512,7 +512,7 @@
                 items: [
                     { name: 'Горячие на вынос', type: 'subcategory' },
                     { name: 'Горячие Напитки', type: 'subcategory' },
-                    { name: 'Бесплатные напитки', type: 'subcategory' },
+                    { name: 'Бесплатный кофе', type: 'subcategory' },
                     { name: 'Картонный сертификат', type: 'inactive' }
                 ]
             },
@@ -771,54 +771,139 @@
 
         // Проверка задания
         // Проверка задания
+        //function checkTask() {
+        //    const currentTask = state.tasks[state.currentTaskIndex];
+
+        //    // Для второго задания (индекс 1) - "Очень горячий американо, но не крепкий с собой и побыстрее"
+        //    //if (state.currentTaskIndex === 1) {
+        //    //    // Проверяем количество элементов (5: С собой, Американо, Адски горячий, На одном эспрессо, Побыстрее)
+        //    //    if (state.selectedItems.length !== 5) {
+        //    //        showModal('Ошибка', 'Неверное количество элементов в заказе', 'error');
+        //    //        return;
+        //    //    }
+
+        //    //    // Проверяем порядок элементов
+        //    //    const expectedOrder = ['С собой', 'Американо', 'Адски горячий', 'На одном эспрессо', 'Побыстрее'];
+        //    //    const isCorrectOrder = state.selectedItems.every((item, index) =>
+        //    //        item.name === expectedOrder[index]
+        //    //    );
+
+        //    //    if (!isCorrectOrder) {
+        //    //        showModal('Ошибка', 'Порядок элементов неверный', 'error');
+        //    //        return;
+        //    //    }
+
+        //    //    // Проверяем, что модификаторы идут после основного продукта
+        //    //    if (!state.selectedItems[2].isModifier || !state.selectedItems[3].isModifier) {
+        //    //        showModal('Ошибка', 'Модификаторы должны быть привязаны к продукту', 'error');
+        //    //        return;
+        //    //    }
+
+        //    //    // Если все проверки пройдены
+        //    //    showModal('Правильно!', 'Вы успешно выполнили задание.', 'success');
+        //    //    state.completedTasks++;
+
+        //    //    // Если выполнены все задания, сообщаем родительскому окну
+        //    //    if (state.completedTasks === state.tasks.length) {
+        //    //        window.parent.postMessage({ action: 'completeAllTasks' }, '*');
+        //    //    }
+        //    //    return;
+        //    //}
+
+        //    // Проверка для остальных заданий (как было раньше)
+        //    const userAnswer = state.selectedItems.map(item => item.name).join(', ');
+        //    const correctAnswer = currentTask.answer;
+
+        //    // Нормализация строк для сравнения (удаление лишних пробелов и приведение к нижнему регистру)
+        //    const normalizedUserAnswer = userAnswer.replace(/\s+/g, ' ').trim().toLowerCase();
+        //    const normalizedCorrectAnswer = correctAnswer.replace(/\s+/g, ' ').trim().toLowerCase();
+
+        //    if (normalizedUserAnswer === normalizedCorrectAnswer) {
+        //        showModal('Правильно!', 'Вы успешно выполнили задание.', 'success');
+        //        state.completedTasks++;
+
+        //        // Если выполнены все задания, сообщаем родительскому окну
+        //        if (state.completedTasks === state.tasks.length) {
+        //            window.parent.postMessage({ action: 'completeAllTasks' }, '*');
+        //        }
+        //    } else {
+        //        showModal('Ошибка', 'Задание выполнено неверно. Попробуйте еще раз.', 'error');
+        //    }
+        //}
+
+
+        // Проверка задания
         function checkTask() {
             const currentTask = state.tasks[state.currentTaskIndex];
+            const userItems = state.selectedItems;
+            const correctItems = currentTask.answer.split(', ');
 
-            // Для второго задания (индекс 1) - "Очень горячий американо, но не крепкий с собой и побыстрее"
-            //if (state.currentTaskIndex === 1) {
-            //    // Проверяем количество элементов (5: С собой, Американо, Адски горячий, На одном эспрессо, Побыстрее)
-            //    if (state.selectedItems.length !== 5) {
-            //        showModal('Ошибка', 'Неверное количество элементов в заказе', 'error');
-            //        return;
-            //    }
+            // Проверяем количество элементов
+            if (userItems.length !== correctItems.length) {
+                showModal('Ошибка', 'Неверное количество элементов в заказе', 'error');
+                return;
+            }
 
-            //    // Проверяем порядок элементов
-            //    const expectedOrder = ['С собой', 'Американо', 'Адски горячий', 'На одном эспрессо', 'Побыстрее'];
-            //    const isCorrectOrder = state.selectedItems.every((item, index) =>
-            //        item.name === expectedOrder[index]
-            //    );
+            // Группируем модификаторы для каждого продукта
+            let correctGroups = [];
+            let currentGroup = [];
 
-            //    if (!isCorrectOrder) {
-            //        showModal('Ошибка', 'Порядок элементов неверный', 'error');
-            //        return;
-            //    }
+            for (let item of correctItems) {
+                if (currentGroup.length === 0 ||
+                    (productsData['Модификаторы'] && productsData['Модификаторы'].some(m => m.name === item)) ||
+                    (productsData['Сироп'] && productsData['Сироп'].some(m => m.name === item))) {
+                    // Это модификатор - добавляем в текущую группу
+                    currentGroup.push(item);
+                } else {
+                    // Это новый продукт - сохраняем предыдущую группу и начинаем новую
+                    if (currentGroup.length > 0) correctGroups.push(currentGroup);
+                    currentGroup = [item];
+                }
+            }
+            if (currentGroup.length > 0) correctGroups.push(currentGroup);
 
-            //    // Проверяем, что модификаторы идут после основного продукта
-            //    if (!state.selectedItems[2].isModifier || !state.selectedItems[3].isModifier) {
-            //        showModal('Ошибка', 'Модификаторы должны быть привязаны к продукту', 'error');
-            //        return;
-            //    }
+            // Проверяем группы
+            let userIndex = 0;
+            let allCorrect = true;
 
-            //    // Если все проверки пройдены
-            //    showModal('Правильно!', 'Вы успешно выполнили задание.', 'success');
-            //    state.completedTasks++;
+            for (let group of correctGroups) {
+                const mainProduct = group[0];
+                const modifiers = group.slice(1);
 
-            //    // Если выполнены все задания, сообщаем родительскому окну
-            //    if (state.completedTasks === state.tasks.length) {
-            //        window.parent.postMessage({ action: 'completeAllTasks' }, '*');
-            //    }
-            //    return;
-            //}
+                // Проверяем основной продукт
+                if (userIndex >= userItems.length || userItems[userIndex].name !== mainProduct) {
+                    allCorrect = false;
+                    break;
+                }
+                userIndex++;
 
-            // Проверка для остальных заданий (как было раньше)
-            const userAnswer = state.selectedItems.map(item => item.name).join(', ');
-            const correctAnswer = currentTask.answer;
+                // Проверяем модификаторы (порядок не важен)
+                if (modifiers.length > 0) {
+                    const userModifiers = [];
+                    while (userIndex < userItems.length &&
+                        (productsData['Модификаторы'] && productsData['Модификаторы'].some(m => m.name === userItems[userIndex].name) ||
+                            (productsData['Сироп'] && productsData['Сироп'].some(m => m.name === userItems[userIndex].name))) {
+                        userModifiers.push(userItems[userIndex].name);
+                        userIndex++;
+                    }
 
-            // Нормализация строк для сравнения (удаление лишних пробелов и приведение к нижнему регистру)
-            const normalizedUserAnswer = userAnswer.replace(/\s+/g, ' ').trim().toLowerCase();
-            const normalizedCorrectAnswer = correctAnswer.replace(/\s+/g, ' ').trim().toLowerCase();
+                    // Проверяем, что все нужные модификаторы есть
+                    const missingModifiers = modifiers.filter(m => !userModifiers.includes(m));
+                    if (missingModifiers.length > 0) {
+                        allCorrect = false;
+                        break;
+                    }
 
-            if (normalizedUserAnswer === normalizedCorrectAnswer) {
+                    // Проверяем, что нет лишних модификаторов
+                    const extraModifiers = userModifiers.filter(m => !modifiers.includes(m));
+                    if (extraModifiers.length > 0) {
+                        allCorrect = false;
+                        break;
+                    }
+                }
+            }
+
+            if (allCorrect && userIndex === userItems.length) {
                 showModal('Правильно!', 'Вы успешно выполнили задание.', 'success');
                 state.completedTasks++;
 
@@ -1135,9 +1220,9 @@
             highlightSelectedItem();
 
             // Возвращаемся к главным категориям
-            state.categoryStack = [];
-            state.currentPage = 0;
-            showMainCategories();
+            //state.categoryStack = [];
+            //state.currentPage = 0;
+            //showMainCategories();
 
             // Обновляем состояние кнопки модификатора
             updateModifierButtonState();
