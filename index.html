@@ -833,9 +833,10 @@
 
 
         // Проверка задания
+        // Проверка задания
         function checkTask() {
             const currentTask = state.tasks[state.currentTaskIndex];
-            const userItems = state.selectedItems;
+            const userItems = state.selectedItems.map(item => item.name);
             const correctItems = currentTask.answer.split(', ');
 
             // Проверяем количество элементов
@@ -844,58 +845,63 @@
                 return;
             }
 
-            // Группируем модификаторы для каждого продукта
-            let correctGroups = [];
-            let currentGroup = [];
+            // Группируем элементы по продуктам с модификаторами
+            function groupItems(items) {
+                const groups = [];
+                let currentGroup = [];
 
-            for (let item of correctItems) {
-                if (currentGroup.length === 0 ||
-                    (productsData['Модификаторы'] && productsData['Модификаторы'].some(m => m.name === item)) ||
-                    (productsData['Сироп'] && productsData['Сироп'].some(m => m.name === item))) {
-                    // Это модификатор - добавляем в текущую группу
-                    currentGroup.push(item);
-                } else {
-                    // Это новый продукт - сохраняем предыдущую группу и начинаем новую
-                    if (currentGroup.length > 0) correctGroups.push(currentGroup);
-                    currentGroup = [item];
+                for (const item of items) {
+                    // Проверяем, является ли элемент модификатором
+                    const isModifier = productsData['Модификаторы'] &&
+                        productsData['Модификаторы'].some(m => m.name === item);
+
+                    if (currentGroup.length === 0 || isModifier) {
+                        currentGroup.push(item);
+                    } else {
+                        if (currentGroup.length > 0) groups.push(currentGroup);
+                        currentGroup = [item];
+                    }
                 }
-            }
-            if (currentGroup.length > 0) correctGroups.push(currentGroup);
 
-            // Проверяем группы
-            let userIndex = 0;
+                if (currentGroup.length > 0) groups.push(currentGroup);
+                return groups;
+            }
+
+            const userGroups = groupItems(userItems);
+            const correctGroups = groupItems(correctItems);
+
+            // Проверяем соответствие групп
+            if (userGroups.length !== correctGroups.length) {
+                showModal('Ошибка', 'Неверная структура заказа', 'error');
+                return;
+            }
+
             let allCorrect = true;
 
-            for (let group of correctGroups) {
-                const mainProduct = group[0];
-                const modifiers = group.slice(1);
+            for (let i = 0; i < correctGroups.length; i++) {
+                const userGroup = userGroups[i];
+                const correctGroup = correctGroups[i];
 
-                // Проверяем основной продукт
-                if (userIndex >= userItems.length || userItems[userIndex].name !== mainProduct) {
+                // Основной продукт должен совпадать
+                if (userGroup[0] !== correctGroup[0]) {
                     allCorrect = false;
                     break;
                 }
-                userIndex++;
 
-                // Проверяем модификаторы (порядок не важен)
-                if (modifiers.length > 0) {
-                    const userModifiers = [];
-                    while (userIndex < userItems.length &&
-                        (productsData['Модификаторы'] && productsData['Модификаторы'].some(m => m.name === userItems[userIndex].name) ||
-                            (productsData['Сироп'] && productsData['Сироп'].some(m => m.name === userItems[userIndex].name)))) {
-                        userModifiers.push(userItems[userIndex].name);
-                        userIndex++;
-                    }
+                // Для модификаторов проверяем только наличие, без учета порядка
+                if (userGroup.length > 1) {
+                    const userModifiers = userGroup.slice(1);
+                    const correctModifiers = correctGroup.slice(1);
 
                     // Проверяем, что все нужные модификаторы есть
-                    const missingModifiers = modifiers.filter(m => !userModifiers.includes(m));
+                    const missingModifiers = correctModifiers.filter(m => !userModifiers.includes(m));
                     if (missingModifiers.length > 0) {
                         allCorrect = false;
                         break;
                     }
 
                     // Проверяем, что нет лишних модификаторов
-                    const extraModifiers = userModifiers.filter(m => !modifiers.includes(m));
+                    const extraModifiers = userModifiers.filter(m => !correctModifiers.includes(m));
                     if (extraModifiers.length > 0) {
                         allCorrect = false;
                         break;
@@ -903,7 +909,7 @@
                 }
             }
 
-            if (allCorrect && userIndex === userItems.length) {
+            if (allCorrect) {
                 showModal('Правильно!', 'Вы успешно выполнили задание.', 'success');
                 state.completedTasks++;
 
